@@ -1,0 +1,2919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fosyfol Studio | Nature-Integrated Design Consultancy | USA</title>
+    <meta name="description" content="Fosyfol Studio blends interior design with natural ecosystems. Specializing in living walls, biophilic design, and wellness-optimized spaces across the USA.">
+    <meta name="keywords" content="biophilic design, living walls, interior design, wellness spaces, sustainable design, nature-integrated interiors, USA consultancy, American interior design, biophilic architecture">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        :root {
+            --primary-dark: #1a3a2f;
+            --primary-green: #2d5a43;
+            --accent-green: #5a8c6c;
+            --light-beige: #f8f5f0;
+            --warm-gray: #e8e4dd;
+            --text-dark: #333333;
+            --text-light: #777777;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            background-color: var(--light-beige);
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary-dark);
+            position: relative;
+            display: inline-block;
+            padding-bottom: 15px;
+        }
+
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: var(--accent-green);
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-green);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-green);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header & Navigation */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 20px 0;
+            transition: var(--transition);
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+
+        header.scrolled {
+            padding: 12px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-dark);
+            text-decoration: none;
+        }
+
+        .logo span {
+            color: var(--accent-green);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 35px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: var(--transition);
+            font-size: 0.95rem;
+        }
+
+        nav ul li a:hover {
+            color: var(--accent-green);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            cursor: pointer;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background-color: #0d251b;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            max-width: 600px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            max-width: 500px;
+        }
+
+        .hero-cta {
+            margin-top: 30px;
+        }
+
+        .hero-cta .btn {
+            background-color: white;
+            color: var(--primary-dark);
+        }
+
+        .hero-cta .btn:hover {
+            background-color: var(--accent-green);
+            color: white;
+        }
+
+        /* Canvas for animated drawing */
+        #drawing-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .canvas-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80');
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 3s ease;
+        }
+
+        .canvas-bg.active {
+            opacity: 0.7;
+        }
+
+        /* About Section */
+        .about {
+            background-color: white;
+        }
+
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 60px;
+        }
+
+        .about-text {
+            flex: 1;
+        }
+
+        .about-text h3 {
+            font-size: 2rem;
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+        }
+
+        .about-text p {
+            margin-bottom: 20px;
+            color: var(--text-light);
+        }
+
+        .about-image {
+            flex: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            display: block;
+            transition: var(--transition);
+        }
+
+        .img-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .about-image:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Services Section */
+        .services {
+            background-color: var(--light-beige);
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .service-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-icon {
+            height: 200px;
+            background-color: var(--warm-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--primary-green);
+        }
+
+        .service-content {
+            padding: 30px;
+        }
+
+        .service-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
+
+        /* Portfolio Section */
+        .portfolio {
+            background-color: white;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .portfolio-item {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            height: 300px;
+        }
+
+        .portfolio-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .portfolio-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .portfolio-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(26, 58, 47, 0.9), transparent);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 25px;
+            color: white;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .portfolio-item:hover .portfolio-overlay {
+            opacity: 1;
+        }
+
+        .portfolio-overlay h3 {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .portfolio-overlay p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Testimonials Section */
+        .testimonials {
+            background-color: var(--light-beige);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .testimonial-card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            position: relative;
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 5rem;
+            color: var(--accent-green);
+            opacity: 0.2;
+            font-family: 'Playfair Display', serif;
+            line-height: 1;
+        }
+
+        .testimonial-text {
+            margin-bottom: 20px;
+            font-style: italic;
+            color: var(--text-light);
+            position: relative;
+            z-index: 1;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 15px;
+            background-color: var(--warm-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-green);
+            font-size: 1.5rem;
+        }
+
+        .author-info h4 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: var(--primary-dark);
+        }
+
+        .author-info p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Contact Section */
+        .contact {
+            background-color: white;
+        }
+
+        .contact-container {
+            display: flex;
+            gap: 50px;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-form {
+            flex: 1;
+        }
+
+        .contact-info h3 {
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            margin-bottom: 25px;
+        }
+
+        .contact-details {
+            margin-bottom: 30px;
+        }
+
+        .contact-detail {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .contact-detail i {
+            width: 40px;
+            height: 40px;
+            background-color: var(--warm-gray);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary-green);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Montserrat', sans-serif;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-green);
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        #map {
+            height: 400px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 40px;
+            border: 1px solid #ddd;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--primary-dark);
+            color: white;
+            padding: 70px 0 20px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+            gap: 40px;
+        }
+
+        .footer-col {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .footer-col h4 {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-col h4::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background-color: var(--accent-green);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #bbb;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-icons a::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            transform: translateY(100%);
+            transition: var(--transition);
+        }
+
+        .social-icons a:hover::before {
+            transform: translateY(0);
+        }
+
+        .social-icons a i {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Leaf shape for social icons */
+        .leaf-icon {
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            background-color: var(--accent-green);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9rem;
+            color: #bbb;
+        }
+
+        /* Modal for Policies */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: white;
+            max-width: 800px;
+            margin: 50px auto;
+            border-radius: 10px;
+            padding: 40px;
+            position: relative;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-header h3 {
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-modal:hover {
+            color: var(--primary-dark);
+        }
+
+        .modal-body {
+            line-height: 1.8;
+            color: var(--text-light);
+        }
+
+        .modal-body h4 {
+            color: var(--primary-dark);
+            margin: 25px 0 15px;
+            font-size: 1.3rem;
+        }
+
+        .modal-body h5 {
+            color: var(--primary-dark);
+            margin: 20px 0 10px;
+            font-size: 1.1rem;
+        }
+
+        .modal-body p {
+            margin-bottom: 15px;
+        }
+
+        .modal-body ul, .modal-body ol {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+
+        .modal-body li {
+            margin-bottom: 10px;
+        }
+
+        .policy-section {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .policy-section:last-child {
+            border-bottom: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .about-content {
+                flex-direction: column;
+            }
+            
+            .portfolio-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .contact-container {
+                flex-direction: column;
+            }
+            
+            .about-image {
+                flex-direction: row;
+            }
+            
+            .img-col {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav ul {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero h1 {
+                font-size: 2.8rem;
+            }
+            
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .about-image {
+                flex-direction: column;
+            }
+            
+            .modal-content {
+                padding: 25px;
+                margin: 20px auto;
+            }
+        }
+
+        @media (max-width: 576px) {
+            section {
+                padding: 60px 0;
+            }
+            
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header & Navigation -->
+    <header id="header">
+        <div class="container nav-container">
+            <a href="#" class="logo">Fosyfol<span>Studio</span></a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav>
+                <ul id="mainNav">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#portfolio">Portfolio</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Let Nature Co-Design Your Space</h1>
+                <p>Fosyfol Studio seamlessly blends interior design with living ecosystems, creating wellness-optimized environments that reconnect people with nature across the United States.</p>
+                <div class="hero-cta">
+                    <a href="#contact" class="btn">Start Your Project</a>
+                </div>
+            </div>
+        </div>
+        <div id="drawing-canvas">
+            <div class="canvas-bg" id="canvasBg"></div>
+            <canvas id="lineCanvas"></canvas>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="container">
+            <div class="section-title">
+                <h2>About Our Philosophy</h2>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Biophilic Design at Its Core</h3>
+                    <p>At Fosyfol Studio, we believe that the best interiors are those that don't just look beautiful but feel alive. Our approach integrates living ecosystems directly into architectural spaces, creating environments that support human wellness and ecological balance.</p>
+                    <p>Founded in 2015 in Portland, Oregon, we've pioneered nature-integrated design across the United States, working with residential clients, corporate offices, healthcare facilities, and hospitality venues to create spaces that breathe, grow, and evolve.</p>
+                    <p>Our American-based team includes interior designers, botanists, light therapy specialists, and sustainability experts who collaborate to create truly holistic environments that reflect the diverse ecosystems of North America.</p>
+                    <a href="#services" class="btn">Our Services</a>
+                </div>
+                <div class="about-image">
+                    <div class="img-col">
+                        <img src="https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Fosyfol Studio interior design with living wall">
+                        <img src="https://images.unsplash.com/photo-1566665797739-1674de7a421a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Biophilic design in modern American home">
+                    </div>
+                    <div class="img-col">
+                        <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Nature integrated office space USA">
+                        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Living wall installation in American corporate office">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section class="services" id="services">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our Specialized Services</h2>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-leaf"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>Living Wall Biome Curation</h3>
+                        <p>Design and maintenance of vertical ecosystems tailored to your space's light, humidity, and aesthetic requirements. We select native and adaptive plant species that purify air, regulate humidity, and create visual harmony specific to North American climates.</p>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-sun"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>Light Spectrum Optimization</h3>
+                        <p>Custom lighting solutions that mimic natural daylight patterns to support circadian rhythms, enhance mood, and promote wellness in indoor environments throughout the diverse American climate zones.</p>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <i class="fas fa-tree"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>Biophilic Space Planning</h3>
+                        <p>Holistic interior design that incorporates natural materials, organic forms, and strategic placement of living elements to create spaces that feel connected to the American landscape and regional ecosystems.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section class="portfolio" id="portfolio">
+        <div class="container">
+            <div class="section-title">
+                <h2>Our Portfolio</h2>
+            </div>
+            <div class="portfolio-grid" id="portfolioGrid">
+                <!-- Portfolio items will be generated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-title">
+                <h2>Client Experiences Across USA</h2>
+            </div>
+            <div class="testimonials-grid" id="testimonialsGrid">
+                <!-- Testimonials will be generated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="contact" id="contact">
+        <div class="container">
+            <div class="section-title">
+                <h2>Get In Touch</h2>
+            </div>
+            <div class="contact-container">
+                <div class="contact-info">
+                    <h3>Connect With Our Team</h3>
+                    <div class="contact-details">
+                        <div class="contact-detail">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <h4>Headquarters</h4>
+                                <p>123 Biophilic Way, Portland, OR 97205</p>
+                            </div>
+                        </div>
+                        <div class="contact-detail">
+                            <i class="fas fa-city"></i>
+                            <div>
+                                <h4>Regional Offices</h4>
+                                <p>New York | Chicago | San Francisco | Miami</p>
+                            </div>
+                        </div>
+                        <div class="contact-detail">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <h4>Call Us</h4>
+                                <p>+1 (503) 555-0123</p>
+                            </div>
+                        </div>
+                        <div class="contact-detail">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <h4>Email</h4>
+                                <p>design@fosyfolstudio.com</p>
+                            </div>
+                        </div>
+                    </div>
+                    <p>We serve clients across all 50 states with projects ranging from residential biophilic design to large-scale corporate wellness environments.</p>
+                </div>
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <select id="state" class="form-control" required>
+                                <option value="">Select your state</option>
+                                <option value="AL">Alabama</option>
+                                <option value="AK">Alaska</option>
+                                <option value="AZ">Arizona</option>
+                                <option value="AR">Arkansas</option>
+                                <option value="CA">California</option>
+                                <option value="CO">Colorado</option>
+                                <option value="CT">Connecticut</option>
+                                <option value="DE">Delaware</option>
+                                <option value="FL">Florida</option>
+                                <option value="GA">Georgia</option>
+                                <option value="HI">Hawaii</option>
+                                <option value="ID">Idaho</option>
+                                <option value="IL">Illinois</option>
+                                <option value="IN">Indiana</option>
+                                <option value="IA">Iowa</option>
+                                <option value="KS">Kansas</option>
+                                <option value="KY">Kentucky</option>
+                                <option value="LA">Louisiana</option>
+                                <option value="ME">Maine</option>
+                                <option value="MD">Maryland</option>
+                                <option value="MA">Massachusetts</option>
+                                <option value="MI">Michigan</option>
+                                <option value="MN">Minnesota</option>
+                                <option value="MS">Mississippi</option>
+                                <option value="MO">Missouri</option>
+                                <option value="MT">Montana</option>
+                                <option value="NE">Nebraska</option>
+                                <option value="NV">Nevada</option>
+                                <option value="NH">New Hampshire</option>
+                                <option value="NJ">New Jersey</option>
+                                <option value="NM">New Mexico</option>
+                                <option value="NY">New York</option>
+                                <option value="NC">North Carolina</option>
+                                <option value="ND">North Dakota</option>
+                                <option value="OH">Ohio</option>
+                                <option value="OK">Oklahoma</option>
+                                <option value="OR">Oregon</option>
+                                <option value="PA">Pennsylvania</option>
+                                <option value="RI">Rhode Island</option>
+                                <option value="SC">South Carolina</option>
+                                <option value="SD">South Dakota</option>
+                                <option value="TN">Tennessee</option>
+                                <option value="TX">Texas</option>
+                                <option value="UT">Utah</option>
+                                <option value="VT">Vermont</option>
+                                <option value="VA">Virginia</option>
+                                <option value="WA">Washington</option>
+                                <option value="WV">West Virginia</option>
+                                <option value="WI">Wisconsin</option>
+                                <option value="WY">Wyoming</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="project">Project Type</label>
+                            <select id="project" class="form-control" required>
+                                <option value="">Select a project type</option>
+                                <option value="residential">Residential</option>
+                                <option value="commercial">Commercial</option>
+                                <option value="hospitality">Hospitality</option>
+                                <option value="healthcare">Healthcare</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Project Details</label>
+                            <textarea id="message" class="form-control" placeholder="Tell us about your space and vision..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn">Send Message</button>
+                    </form>
+                </div>
+            </div>
+            <div id="map"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-col">
+                    <h4>Fosyfol Studio</h4>
+                    <p>Creating wellness-optimized environments through nature-integrated design across the United States. Serving all 50 states with regional offices in major metropolitan areas.</p>
+                    <div class="social-icons">
+                        <a href="#" class="leaf-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="leaf-icon"><i class="fab fa-pinterest"></i></a>
+                        <a href="#" class="leaf-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="leaf-icon"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="leaf-icon"><i class="fab fa-houzz"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#portfolio">Portfolio</a></li>
+                        <li><a href="#testimonials">Testimonials</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal & Policies</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" class="policy-link" data-policy="privacy">Privacy Policy</a></li>
+                        <li><a href="#" class="policy-link" data-policy="terms">Terms of Service</a></li>
+                        <li><a href="#" class="policy-link" data-policy="cookie">Cookie Policy</a></li>
+                        <li><a href="#" class="policy-link" data-policy="accessibility">Accessibility Statement</a></li>
+                        <li><a href="#" class="policy-link" data-policy="sustainability">Sustainability Commitment</a></li>
+                        <li><a href="#" class="policy-link" data-policy="client">Client Agreement</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Fosyfol Studio. All rights reserved. | Nature-Integrated Design Consultancy | USA</p>
+                <p>Portland | New York | Chicago | San Francisco | Miami | Serving All 50 States</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Policy Modals -->
+    <div id="policyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Policy</h3>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Policy content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Portfolio Data
+        const portfolioItems = [
+            { id: 1, title: "Urban Oasis Residence", category: "Portland, OR", img: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+            { id: 2, title: "Wellness Corporate Office", category: "New York, NY", img: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+            { id: 3, title: "Hospital Healing Garden", category: "Chicago, IL", img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+            { id: 4, title: "Boutique Hotel Lobby", category: "Miami, FL", img: "https://images.unsplash.com/photo-1564078516393-cf04bd966897?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+            { id: 5, title: "Meditation Center", category: "San Francisco, CA", img: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+            { id: 6, title: "Living Wall Restaurant", category: "Austin, TX", img: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+            { id: 7, title: "Biophilic School Library", category: "Seattle, WA", img: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+            { id: 8, title: "Eco-Retail Store", category: "Denver, CO", img: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" },
+            { id: 9, title: "Sky Garden Apartment", category: "Boston, MA", img: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" }
+        ];
+
+        // USA-Based Testimonials Data
+        const testimonials = [
+            { id: 1, text: "Fosyfol transformed our corporate office in Manhattan into a living, breathing space that employees love. Productivity and satisfaction have increased noticeably since the installation of the living walls. Working with a US-based team who understands American workplace culture made all the difference.", author: "Sarah Johnson", role: "CEO, GreenTech Solutions, New York, NY" },
+            { id: 2, text: "The light spectrum optimization in our Portland home has completely changed our family's sleep patterns and overall mood. We didn't realize how much artificial lighting was affecting us, especially during the Pacific Northwest winters. The Fosyfol team was knowledgeable about our regional light conditions.", author: "Michael Chen", role: "Homeowner, Portland, OR" },
+            { id: 3, text: "Working with Fosyfol Studio on our Chicago healthcare facility was a revelation. They understood our vision for a healing environment that would serve our diverse Midwest community and exceeded all expectations with their biophilic design approach tailored to our climate.", author: "Dr. Elena Rodriguez", role: "Medical Director, Wellness Center, Chicago, IL" },
+            { id: 4, text: "Our Miami restaurant's living wall has become the main attraction. Customers love the tropical ambiance, and we've seen a 30% increase in business since the renovation. Fosyfol's understanding of Florida's humidity and light conditions ensured the plants thrive year-round.", author: "James Wilson", role: "Restaurant Owner, Miami, FL" },
+            { id: 5, text: "The attention to detail and deep understanding of California native plant ecosystems is what sets Fosyfol apart. Our living wall in San Francisco is thriving a year later with minimal maintenance. Their commitment to sustainable, locally-appropriate design is impressive.", author: "Amanda Park", role: "Interior Designer, San Francisco, CA" },
+            { id: 6, text: "As someone with seasonal affective disorder in Minnesota, the light optimization in my home office has been life-changing. I'm more productive and happier throughout the long winter months. Fosyfol's solution was specifically designed for northern climate challenges.", author: "David Miller", role: "Writer & Consultant, Minneapolis, MN" }
+        ];
+
+        // Detailed Policy Content
+        const policies = {
+            privacy: {
+                title: "Privacy Policy",
+                content: `
+                    <div class="policy-section">
+                        <h4>FOSYFOL STUDIO PRIVACY POLICY</h4>
+                        <p><strong>Effective Date:</strong> October 15, 2023</p>
+                        <p><strong>Last Updated:</strong> October 15, 2023</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>1. INTRODUCTION</h4>
+                        <p>Fosyfol Studio ("we," "our," or "us") respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website www.fosyfolstudio.com, use our services, or interact with us in any other way.</p>
+                        <p>This policy complies with applicable United States privacy laws, including the California Consumer Privacy Act (CCPA), Virginia Consumer Data Protection Act (VCDPA), Colorado Privacy Act (CPA), and other state-specific privacy regulations.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>2. INFORMATION WE COLLECT</h4>
+                        <h5>2.1 Personal Information</h5>
+                        <p>We may collect the following categories of personal information:</p>
+                        <ul>
+                            <li><strong>Identifiers:</strong> Name, email address, phone number, physical address, IP address</li>
+                            <li><strong>Commercial Information:</strong> Services purchased, purchasing history, project details</li>
+                            <li><strong>Financial Information:</strong> Payment card details (processed securely through third-party processors)</li>
+                            <li><strong>Professional Information:</strong> Business name, job title, company information</li>
+                            <li><strong>Internet Activity:</strong> Browsing history, interactions with our website, device information</li>
+                            <li><strong>Geolocation Data:</strong> Approximate location based on IP address or provided address</li>
+                            <li><strong>Sensory Data:</strong> Photographs of project spaces (with consent)</li>
+                        </ul>
+
+                        <h5>2.2 How We Collect Information</h5>
+                        <ul>
+                            <li><strong>Directly from you:</strong> When you fill out forms, contact us, use our services, or communicate with us</li>
+                            <li><strong>Automatically:</strong> Through cookies and similar technologies when you use our website</li>
+                            <li><strong>From third parties:</strong> Business partners, service providers, social media platforms</li>
+                            <li><strong>From public sources:</strong> Publicly available information relevant to your project</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>3. HOW WE USE YOUR INFORMATION</h4>
+                        <p>We use your personal information for the following business purposes:</p>
+                        <ul>
+                            <li><strong>Service Delivery:</strong> To provide our nature-integrated design services, including consultations, design development, and project management</li>
+                            <li><strong>Communication:</strong> To respond to inquiries, send project updates, and provide customer support</li>
+                            <li><strong>Business Operations:</strong> To process payments, manage accounts, and maintain business records</li>
+                            <li><strong>Marketing:</strong> To send promotional materials about our services (with opt-out option)</li>
+                            <li><strong>Improvement:</strong> To analyze website usage and improve our services and user experience</li>
+                            <li><strong>Legal Compliance:</strong> To comply with legal obligations and protect our legal rights</li>
+                            <li><strong>Research:</strong> To conduct market research and develop new services (anonymized where possible)</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>4. INFORMATION SHARING AND DISCLOSURE</h4>
+                        <p>We may share your information in the following circumstances:</p>
+                        <ul>
+                            <li><strong>Service Providers:</strong> With contractors, vendors, and service providers who assist in our operations (e.g., payment processors, cloud hosting, marketing agencies)</li>
+                            <li><strong>Business Partners:</strong> With partners who provide complementary services to your project (e.g., architects, contractors, plant suppliers) with your consent</li>
+                            <li><strong>Legal Requirements:</strong> When required by law, subpoena, or legal process</li>
+                            <li><strong>Business Transfers:</strong> In connection with a merger, acquisition, or sale of assets</li>
+                            <li><strong>Protection of Rights:</strong> To protect our rights, property, or safety, or that of others</li>
+                            <li><strong>With Your Consent:</strong> For any other purpose disclosed with your consent</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>5. DATA SECURITY</h4>
+                        <p>We implement reasonable administrative, technical, and physical security measures to protect your personal information, including:</p>
+                        <ul>
+                            <li>Encryption of sensitive data in transit and at rest</li>
+                            <li>Regular security assessments and vulnerability testing</li>
+                            <li>Access controls and authentication procedures</li>
+                            <li>Secure data backup and disaster recovery procedures</li>
+                            <li>Employee training on data protection and privacy</li>
+                        </ul>
+                        <p>However, no method of transmission over the Internet or electronic storage is 100% secure, and we cannot guarantee absolute security.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>6. YOUR PRIVACY RIGHTS</h4>
+                        <p>Depending on your state of residence, you may have the following rights:</p>
+                        <ul>
+                            <li><strong>Right to Know:</strong> Request information about what personal information we collect, use, disclose, or sell</li>
+                            <li><strong>Right to Access:</strong> Request access to your personal information</li>
+                            <li><strong>Right to Correction:</strong> Request correction of inaccurate personal information</li>
+                            <li><strong>Right to Deletion:</strong> Request deletion of your personal information, subject to exceptions</li>
+                            <li><strong>Right to Opt-Out:</strong> Opt-out of the sale or sharing of your personal information</li>
+                            <li><strong>Right to Non-Discrimination:</strong> Not receive discriminatory treatment for exercising your rights</li>
+                            <li><strong>Right to Limit Use:</strong> Limit the use of sensitive personal information</li>
+                        </ul>
+                        <p>To exercise these rights, please contact us using the information in Section 10. We will verify your identity before processing your request.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>7. DATA RETENTION</h4>
+                        <p>We retain personal information for as long as necessary to fulfill the purposes outlined in this policy, unless a longer retention period is required or permitted by law. Retention periods vary based on:</p>
+                        <ul>
+                            <li><strong>Active Clients:</strong> Duration of our business relationship plus 7 years for legal and tax purposes</li>
+                            <li><strong>Inquiries:</strong> 3 years from last contact for potential future business</li>
+                            <li><strong>Marketing Lists:</strong> Until you opt-out or we determine the information is no longer relevant</li>
+                            <li><strong>Legal Requirements:</strong> As required by applicable laws, regulations, or legal proceedings</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>8. INTERNATIONAL DATA TRANSFERS</h4>
+                        <p>We are based in the United States and primarily process data within the U.S. However, some service providers may process data in other countries. When we transfer data outside the U.S., we implement appropriate safeguards as required by applicable laws.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>9. CHILDREN'S PRIVACY</h4>
+                        <p>Our services are not directed to children under 16. We do not knowingly collect personal information from children under 16. If we learn we have collected such information, we will delete it promptly.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>10. CONTACT INFORMATION</h4>
+                        <p>If you have questions about this Privacy Policy or wish to exercise your privacy rights, please contact us:</p>
+                        <p><strong>Fosyfol Studio Privacy Officer</strong><br>
+                        123 Biophilic Way<br>
+                        Portland, OR 97205<br>
+                        Email: privacy@fosyfolstudio.com<br>
+                        Phone: +1 (503) 555-0123</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>11. CHANGES TO THIS POLICY</h4>
+                        <p>We may update this Privacy Policy periodically. We will notify you of material changes by posting the new policy on our website with an updated effective date. We encourage you to review this policy regularly.</p>
+                    </div>
+                `
+            },
+            terms: {
+                title: "Terms of Service",
+                content: `
+                    <div class="policy-section">
+                        <h4>FOSYFOL STUDIO TERMS OF SERVICE</h4>
+                        <p><strong>Effective Date:</strong> October 15, 2023</p>
+                        <p><strong>Last Updated:</strong> October 15, 2023</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>1. ACCEPTANCE OF TERMS</h4>
+                        <p>By accessing and using the Fosyfol Studio website (www.fosyfolstudio.com) or engaging our services, you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you must not use our website or services.</p>
+                        <p>These Terms constitute a legally binding agreement between you ("Client," "you," or "your") and Fosyfol Studio ("we," "our," "us," or "Fosyfol").</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>2. SERVICES DESCRIPTION</h4>
+                        <p>Fosyfol Studio provides nature-integrated interior design consultancy services, including but not limited to:</p>
+                        <ul>
+                            <li>Biophilic design consultation and space planning</li>
+                            <li>Living wall biome curation and installation</li>
+                            <li>Light spectrum optimization for wellness</li>
+                            <li>Sustainable material selection and specification</li>
+                            <li>Project management and contractor coordination</li>
+                            <li>Post-installation maintenance guidance and support</li>
+                        </ul>
+                        <p>Specific services will be detailed in a separate Service Agreement for each project.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>3. ELIGIBILITY</h4>
+                        <p>To use our services, you must:</p>
+                        <ul>
+                            <li>Be at least 18 years of age</li>
+                            <li>Have the legal authority to enter into binding contracts</li>
+                            <li>Provide accurate and complete information</li>
+                            <li>Reside in a jurisdiction where our services are available</li>
+                            <li>Have legal rights to the property where services will be performed</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>4. INTELLECTUAL PROPERTY</h4>
+                        <h5>4.1 Our Intellectual Property</h5>
+                        <p>All content on our website, including text, graphics, logos, images, designs, and software, is owned by Fosyfol Studio or its licensors and is protected by United States and international intellectual property laws.</p>
+                        <p>Design concepts, drawings, specifications, and other deliverables created by Fosyfol remain our intellectual property until full payment is received. Upon complete payment, you receive a non-exclusive, non-transferable license to use the designs for your specific project.</p>
+
+                        <h5>4.2 Client Materials</h5>
+                        <p>You retain ownership of any materials you provide to us. By providing materials, you grant us a license to use them for the purpose of providing our services.</p>
+
+                        <h5>4.3 Restrictions</h5>
+                        <p>You may not:</p>
+                        <ul>
+                            <li>Copy, modify, or create derivative works of our designs without permission</li>
+                            <li>Use our designs for commercial purposes beyond your specific project</li>
+                            <li>Remove any copyright or proprietary notices</li>
+                            <li>Reverse engineer or decompile any of our software or systems</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>5. FEES AND PAYMENT</h4>
+                        <h5>5.1 Fee Structure</h5>
+                        <p>Our fees may be structured as:</p>
+                        <ul>
+                            <li><strong>Fixed Project Fee:</strong> Agreed upon in the Service Agreement</li>
+                            <li><strong>Hourly Rate:</strong> $150-$250 per hour depending on staff level</li>
+                            <li><strong>Cost-Plus:</strong> Materials and subcontractor costs plus a percentage</li>
+                            <li><strong>Retainer:</strong> Monthly or quarterly retainer for ongoing services</li>
+                        </ul>
+
+                        <h5>5.2 Payment Terms</h5>
+                        <ul>
+                            <li>A non-refundable retainer of 25-50% is typically required to commence work</li>
+                            <li>Progress payments are due according to the project schedule</li>
+                            <li>Final payment is due upon project completion</li>
+                            <li>Late payments incur interest at 1.5% per month or the maximum rate allowed by law</li>
+                        </ul>
+
+                        <h5>5.3 Expenses</h5>
+                        <p>You are responsible for reimbursing reasonable expenses incurred in providing services, including travel, materials samples, and subcontractor costs. Expenses over $100 require prior approval.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>6. PROJECT TIMELINE AND DELAYS</h4>
+                        <p>We will provide an estimated project timeline. Actual completion dates may vary due to:</p>
+                        <ul>
+                            <li>Client decision-making delays</li>
+                            <li>Material availability and lead times</li>
+                            <li>Contractor schedules and availability</li>
+                            <li>Weather conditions affecting installations</li>
+                            <li>Permitting and inspection processes</li>
+                            <li>Force majeure events</li>
+                        </ul>
+                        <p>We are not liable for delays beyond our reasonable control.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>7. CLIENT RESPONSIBILITIES</h4>
+                        <p>You agree to:</p>
+                        <ul>
+                            <li>Provide accurate and complete information about your project</li>
+                            <li>Make timely decisions and provide necessary approvals</li>
+                            <li>Grant safe access to the property for site visits and installations</li>
+                            <li>Obtain necessary permits, approvals, and HOA consents</li>
+                            <li>Secure appropriate insurance for the property</li>
+                            <li>Make timely payments as agreed</li>
+                            <li>Follow maintenance guidelines for installed systems</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>8. CHANGES AND CANCELLATIONS</h4>
+                        <h5>8.1 Change Orders</h5>
+                        <p>Any changes to the scope of work must be documented in a written Change Order, signed by both parties, detailing any additional fees or timeline adjustments.</p>
+
+                        <h5>8.2 Cancellation</h5>
+                        <p>Either party may terminate the Service Agreement with 30 days written notice. Upon termination:</p>
+                        <ul>
+                            <li>You must pay for all services rendered up to the termination date</li>
+                            <li>You must pay for any non-cancellable commitments we have made</li>
+                            <li>We will deliver all completed work product</li>
+                            <li>Our intellectual property rights remain in effect</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>9. WARRANTIES AND DISCLAIMERS</h4>
+                        <h5>9.1 Service Warranty</h5>
+                        <p>We warrant that our services will be performed with reasonable care and skill. We provide a 90-day warranty on workmanship from completion date.</p>
+
+                        <h5>9.2 Living Systems</h5>
+                        <p>Living systems (plants, irrigation) require proper maintenance. We provide guidance but cannot guarantee plant survival, which depends on proper care, environmental conditions, and factors beyond our control.</p>
+
+                        <h5>9.3 Disclaimer of Other Warranties</h5>
+                        <p>EXCEPT AS EXPRESSLY STATED HEREIN, WE DISCLAIM ALL OTHER WARRANTIES, EXPRESS OR IMPLIED, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>10. LIMITATION OF LIABILITY</h4>
+                        <p>IN NO EVENT SHALL FOSYFOL STUDIO BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOST PROFITS OR DATA, ARISING FROM YOUR USE OF OUR SERVICES.</p>
+                        <p>OUR TOTAL LIABILITY FOR ANY CLAIM ARISING FROM THESE TERMS OR OUR SERVICES SHALL NOT EXCEED THE TOTAL FEES PAID BY YOU FOR THE SPECIFIC PROJECT GIVING RISE TO THE CLAIM.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>11. INDEMNIFICATION</h4>
+                        <p>You agree to indemnify and hold harmless Fosyfol Studio, its officers, directors, employees, and agents from any claims, damages, losses, or expenses arising from:</p>
+                        <ul>
+                            <li>Your breach of these Terms</li>
+                            <li>Your use of our services</li>
+                            <li>Your negligence or willful misconduct</li>
+                            <li>Property damage or personal injury caused by your property conditions</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>12. DISPUTE RESOLUTION</h4>
+                        <h5>12.1 Negotiation</h5>
+                        <p>Parties agree to attempt to resolve disputes through good faith negotiation for at least 30 days before initiating formal proceedings.</p>
+
+                        <h5>12.2 Mediation</h5>
+                        <p>If negotiation fails, parties agree to mediate the dispute with a mutually acceptable mediator in Portland, Oregon, before pursuing litigation.</p>
+
+                        <h5>12.3 Governing Law and Jurisdiction</h5>
+                        <p>These Terms shall be governed by Oregon law. Any legal action shall be brought in state or federal courts in Multnomah County, Oregon.</p>
+
+                        <h5>12.4 Class Action Waiver</h5>
+                        <p>You waive any right to participate in class actions against Fosyfol Studio.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>13. GENERAL PROVISIONS</h4>
+                        <h5>13.1 Entire Agreement</h5>
+                        <p>These Terms, together with any Service Agreement, constitute the entire agreement between you and Fosyfol Studio.</p>
+
+                        <h5>13.2 Severability</h5>
+                        <p>If any provision is found unenforceable, the remaining provisions remain in effect.</p>
+
+                        <h5>13.3 Assignment</h5>
+                        <p>You may not assign your rights under these Terms without our written consent. We may assign our rights to a successor entity.</p>
+
+                        <h5>13.4 Notices</h5>
+                        <p>Notices must be in writing and sent to the addresses in the Service Agreement or our website.</p>
+
+                        <h5>13.5 Force Majeure</h5>
+                        <p>We are not liable for failure to perform due to circumstances beyond our reasonable control.</p>
+
+                        <h5>13.6 Amendments</h5>
+                        <p>We may modify these Terms at any time. Continued use of our services constitutes acceptance of modified Terms.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>14. CONTACT INFORMATION</h4>
+                        <p>For questions about these Terms, contact:</p>
+                        <p><strong>Fosyfol Studio</strong><br>
+                        123 Biophilic Way<br>
+                        Portland, OR 97205<br>
+                        Email: legal@fosyfolstudio.com<br>
+                        Phone: +1 (503) 555-0123</p>
+                    </div>
+                `
+            },
+            cookie: {
+                title: "Cookie Policy",
+                content: `
+                    <div class="policy-section">
+                        <h4>FOSYFOL STUDIO COOKIE POLICY</h4>
+                        <p><strong>Effective Date:</strong> October 15, 2023</p>
+                        <p><strong>Last Updated:</strong> October 15, 2023</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>1. INTRODUCTION</h4>
+                        <p>This Cookie Policy explains how Fosyfol Studio ("we," "our," or "us") uses cookies and similar tracking technologies on our website www.fosyfolstudio.com. By using our website, you consent to the use of cookies as described in this policy.</p>
+                        <p>This policy supplements our Privacy Policy and explains what cookies are, how we use them, and your choices regarding cookies.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>2. WHAT ARE COOKIES?</h4>
+                        <p>Cookies are small text files that are placed on your device (computer, tablet, or mobile phone) when you visit a website. Cookies are widely used to make websites work more efficiently and provide information to website owners.</p>
+                        
+                        <h5>2.1 Types of Cookies</h5>
+                        <ul>
+                            <li><strong>Session Cookies:</strong> Temporary cookies that expire when you close your browser</li>
+                            <li><strong>Persistent Cookies:</strong> Remain on your device for a set period or until deleted</li>
+                            <li><strong>First-Party Cookies:</strong> Set by the website you're visiting</li>
+                            <li><strong>Third-Party Cookies:</strong> Set by domains other than the website you're visiting</li>
+                        </ul>
+
+                        <h5>2.2 Similar Technologies</h5>
+                        <p>We also use similar technologies including:</p>
+                        <ul>
+                            <li><strong>Web Beacons:</strong> Small graphic images that monitor website traffic</li>
+                            <li><strong>Local Storage:</strong> Data stored locally in your browser</li>
+                            <li><strong>Session Storage:</strong> Data stored for a single browser session</li>
+                            <li><strong>Pixels:</strong> Code that tracks user behavior</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>3. HOW WE USE COOKIES</h4>
+                        <p>We use cookies for the following purposes:</p>
+
+                        <h5>3.1 Essential Cookies</h5>
+                        <p><strong>Purpose:</strong> Necessary for the website to function properly. Cannot be switched off.</p>
+                        <p><strong>Examples:</strong></p>
+                        <ul>
+                            <li>Authentication cookies to keep you logged in</li>
+                            <li>Security cookies to protect against attacks</li>
+                            <li>Load balancing cookies to distribute traffic</li>
+                            <li>Cookies that remember your cookie preferences</li>
+                        </ul>
+
+                        <h5>3.2 Performance Cookies</h5>
+                        <p><strong>Purpose:</strong> Help us understand how visitors interact with our website.</p>
+                        <p><strong>Examples:</strong></p>
+                        <ul>
+                            <li>Analytics cookies to track website usage</li>
+                            <li>Error reporting cookies to identify issues</li>
+                            <li>Testing cookies for A/B testing different designs</li>
+                        </ul>
+
+                        <h5>3.3 Functionality Cookies</h5>
+                        <p><strong>Purpose:</strong> Remember your preferences and settings to enhance your experience.</p>
+                        <p><strong>Examples:</strong></p>
+                        <ul>
+                            <li>Language preference cookies</li>
+                            <li>Region-specific content cookies</li>
+                            <li>Layout and display preference cookies</li>
+                            <li>Chat widget cookies for support conversations</li>
+                        </ul>
+
+                        <h5>3.4 Targeting/Advertising Cookies</h5>
+                        <p><strong>Purpose:</strong> Used to deliver relevant advertisements and track campaign performance.</p>
+                        <p><strong>Examples:</strong></p>
+                        <ul>
+                            <li>Retargeting cookies to show relevant ads</li>
+                            <li>Social media cookies for sharing functionality</li>
+                            <li>Affiliate marketing cookies to track referrals</li>
+                            <li>Conversion tracking cookies for marketing campaigns</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>4. SPECIFIC COOKIES WE USE</h4>
+                        
+                        <h5>4.1 First-Party Cookies</h5>
+                        <table style="width:100%; border-collapse: collapse; margin: 20px 0;">
+                            <thead>
+                                <tr style="background-color: #f5f5f5;">
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Cookie Name</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Purpose</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Duration</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">fs_session</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">Maintain user session</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">Session</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">fs_preferences</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">Store user preferences</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">1 year</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">fs_cookie_consent</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">Remember cookie choices</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">1 year</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <h5>4.2 Third-Party Cookies</h5>
+                        <table style="width:100%; border-collapse: collapse; margin: 20px 0;">
+                            <thead>
+                                <tr style="background-color: #f5f5f5;">
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Service</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Purpose</th>
+                                    <th style="padding: 10px; border: 1px solid #ddd;">Privacy Policy</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">Google Analytics</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">Website analytics</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;"><a href="https://policies.google.com/privacy">Google Privacy Policy</a></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">Facebook Pixel</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">Advertising and analytics</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;"><a href="https://www.facebook.com/policy.php">Facebook Data Policy</a></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">LinkedIn Insight</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">Advertising and analytics</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;"><a href="https://www.linkedin.com/legal/privacy-policy">LinkedIn Privacy Policy</a></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">Stripe</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">Payment processing</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;"><a href="https://stripe.com/privacy">Stripe Privacy Policy</a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>5. YOUR COOKIE CHOICES</h4>
+                        
+                        <h5>5.1 Browser Controls</h5>
+                        <p>Most web browsers allow you to control cookies through their settings. You can:</p>
+                        <ul>
+                            <li>Delete existing cookies</li>
+                            <li>Block all or certain cookies</li>
+                            <li>Set preferences for different websites</li>
+                            <li>Receive notifications when cookies are set</li>
+                        </ul>
+                        <p>Note that blocking cookies may affect website functionality.</p>
+
+                        <h5>5.2 Opt-Out Tools</h5>
+                        <p>You can opt out of certain third-party cookies:</p>
+                        <ul>
+                            <li><strong>Google Analytics:</strong> <a href="https://tools.google.com/dlpage/gaoptout">Google Analytics Opt-out</a></li>
+                            <li><strong>Facebook:</strong> <a href="https://www.facebook.com/ads/preferences">Facebook Ad Preferences</a></li>
+                            <li><strong>Digital Advertising Alliance:</strong> <a href="https://optout.aboutads.info/">DAA Opt-Out Tool</a></li>
+                            <li><strong>Network Advertising Initiative:</strong> <a href="https://optout.networkadvertising.org/">NAI Opt-Out Tool</a></li>
+                        </ul>
+
+                        <h5>5.3 Do Not Track Signals</h5>
+                        <p>Some browsers have "Do Not Track" features. Our website does not currently respond to DNT signals, as there is no industry standard for implementation.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>6. COOKIE CONSENT</h4>
+                        <p>When you first visit our website, you will see a cookie consent banner. You can:</p>
+                        <ul>
+                            <li><strong>Accept All:</strong> Accept all cookies</li>
+                            <li><strong>Reject All:</strong> Reject non-essential cookies</li>
+                            <li><strong>Customize:</strong> Choose specific cookie categories</li>
+                            <li><strong>Learn More:</strong> View this Cookie Policy</li>
+                        </ul>
+                        <p>Your consent preferences are stored in a cookie and remembered for 1 year.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>7. DATA COLLECTED BY COOKIES</h4>
+                        <p>Cookies may collect the following information:</p>
+                        <ul>
+                            <li>IP address and device information</li>
+                            <li>Browser type and version</li>
+                            <li>Pages visited and time spent</li>
+                            <li>Referring website</li>
+                            <li>Click and scroll behavior</li>
+                            <li>Form interactions (without personal data unless submitted)</li>
+                        </ul>
+                        <p>This data is generally aggregated and anonymized for analytics purposes.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>8. SECURITY</h4>
+                        <p>We take measures to secure cookie data:</p>
+                        <ul>
+                            <li>Use of HttpOnly flags to prevent client-side access</li>
+                            <li>Secure flag for cookies transmitted over HTTPS</li>
+                            <li>SameSite attributes to prevent CSRF attacks</li>
+                            <li>Regular security audits of cookie usage</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>9. UPDATES TO THIS POLICY</h4>
+                        <p>We may update this Cookie Policy periodically. Changes will be posted on this page with an updated effective date. We encourage you to review this policy regularly.</p>
+                        <p>Material changes that affect your rights will be communicated through prominent notice on our website.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>10. CONTACT INFORMATION</h4>
+                        <p>For questions about this Cookie Policy, contact:</p>
+                        <p><strong>Fosyfol Studio</strong><br>
+                        123 Biophilic Way<br>
+                        Portland, OR 97205<br>
+                        Email: privacy@fosyfolstudio.com<br>
+                        Phone: +1 (503) 555-0123</p>
+                    </div>
+                `
+            },
+            accessibility: {
+                title: "Accessibility Statement",
+                content: `
+                    <div class="policy-section">
+                        <h4>FOSYFOL STUDIO ACCESSIBILITY STATEMENT</h4>
+                        <p><strong>Effective Date:</strong> October 15, 2023</p>
+                        <p><strong>Last Updated:</strong> October 15, 2023</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>1. OUR COMMITMENT</h4>
+                        <p>Fosyfol Studio is committed to ensuring digital accessibility for people with disabilities. We are continually improving the user experience for everyone and applying the relevant accessibility standards.</p>
+                        <p>We believe that nature-integrated design should be accessible to all, and we extend this philosophy to our digital presence and physical services.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>2. CONFORMANCE STATUS</h4>
+                        <p>We aim to conform to the Web Content Accessibility Guidelines (WCAG) 2.1 Level AA, a set of guidelines developed by the World Wide Web Consortium (W3C) to ensure digital content is accessible to people with disabilities.</p>
+                        
+                        <h5>2.1 Current Status</h5>
+                        <p>Our website www.fosyfolstudio.com is <strong>partially conformant</strong> with WCAG 2.1 Level AA. Partially conformant means that some parts of the content do not fully conform to the accessibility standard.</p>
+                        
+                        <h5>2.2 Ongoing Efforts</h5>
+                        <p>We are actively working to achieve full compliance through:</p>
+                        <ul>
+                            <li>Regular accessibility audits and testing</li>
+                            <li>Employee training on accessibility standards</li>
+                            <li>Incorporating accessibility into our design process</li>
+                            <li>Working with accessibility consultants</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>3. ACCESSIBILITY FEATURES</h4>
+                        <p>Our website includes the following accessibility features:</p>
+                        
+                        <h5>3.1 Navigation</h5>
+                        <ul>
+                            <li>Keyboard navigation support throughout the site</li>
+                            <li>Skip navigation links for screen reader users</li>
+                            <li>Consistent navigation structure across pages</li>
+                            <li>Clear focus indicators for keyboard users</li>
+                        </ul>
+                        
+                        <h5>3.2 Content</h5>
+                        <ul>
+                            <li>Alternative text for meaningful images</li>
+                            <li>Descriptive link text (not just "click here")</li>
+                            <li>Proper heading hierarchy (H1, H2, H3, etc.)</li>
+                            <li>Sufficient color contrast (minimum 4.5:1 for normal text)</li>
+                            <li>Resizable text up to 200% without loss of functionality</li>
+                        </ul>
+                        
+                        <h5>3.3 Forms and Interactions</h5>
+                        <ul>
+                            <li>Form fields with associated labels</li>
+                            <li>Error identification and suggestions for correction</li>
+                            <li>Accessible CAPTCHA alternatives</li>
+                            <li>Keyboard-accessible buttons and controls</li>
+                        </ul>
+                        
+                        <h5>3.4 Multimedia</h5>
+                        <ul>
+                            <li>Video content with captions</li>
+                            <li>Audio content with transcripts</li>
+                            <li>Controls to pause, stop, or hide moving content</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>4. ASSISTIVE TECHNOLOGIES</h4>
+                        <p>Our website is compatible with the following assistive technologies:</p>
+                        <ul>
+                            <li>Screen readers (JAWS, NVDA, VoiceOver)</li>
+                            <li>Screen magnification software</li>
+                            <li>Speech recognition software</li>
+                            <li>Keyboard-only navigation</li>
+                            <li>Switch access devices</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>5. KNOWN LIMITATIONS</h4>
+                        <p>Despite our best efforts, some areas may present accessibility challenges:</p>
+                        
+                        <h5>5.1 Third-Party Content</h5>
+                        <p>Some third-party content or widgets may not be fully accessible. This includes:</p>
+                        <ul>
+                            <li>Social media feeds and sharing buttons</li>
+                            <li>Mapping services</li>
+                            <li>Some video embeds</li>
+                        </ul>
+                        
+                        <h5>5.2 Legacy Content</h5>
+                        <p>Older content uploaded before our current accessibility standards may not be fully compliant.</p>
+                        
+                        <h5>5.3 Complex Visualizations</h5>
+                        <p>Some complex design visualizations may have limited accessibility. We provide text alternatives where possible.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>6. PHYSICAL ACCESSIBILITY</h4>
+                        <p>In addition to digital accessibility, our physical studio locations and services are designed to be accessible:</p>
+                        
+                        <h5>6.1 Studio Locations</h5>
+                        <p>All our studio locations feature:</p>
+                        <ul>
+                            <li>Wheelchair-accessible entrances with automatic doors</li>
+                            <li>Accessible parking spaces</li>
+                            <li>Wheelchair-accessible restrooms</li>
+                            <li>Elevator access to all floors</li>
+                            <li>Clear signage with high contrast and Braille</li>
+                            <li>Adjustable height workstations</li>
+                        </ul>
+                        
+                        <h5>6.2 Service Adaptations</h5>
+                        <p>We can adapt our services for clients with disabilities:</p>
+                        <ul>
+                            <li>Home consultations for clients with mobility limitations</li>
+                            <li>Virtual consultations via accessible video platforms</li>
+                            <li>Materials in alternative formats (large print, audio, Braille)</li>
+                            <li>Assistive listening devices for meetings</li>
+                            <li>Service animal accommodations</li>
+                            <li>Sign language interpreters upon request</li>
+                        </ul>
+                        
+                        <h5>6.3 Universal Design Principles</h5>
+                        <p>Our design services incorporate universal design principles to create spaces accessible to people of all abilities:</p>
+                        <ul>
+                            <li>Design for flexibility in use</li>
+                            <li>Simple and intuitive operation</li>
+                            <li>Perceptible information through multiple senses</li>
+                            <li>Tolerance for error in operation</li>
+                            <li>Low physical effort required</li>
+                            <li>Appropriate size and space for approach and use</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>7. ACCESSIBILITY TRAINING</h4>
+                        <p>Our team receives regular accessibility training:</p>
+                        <ul>
+                            <li><strong>All Staff:</strong> Basic accessibility awareness training</li>
+                            <li><strong>Design Team:</strong> Advanced training on accessible design principles</li>
+                            <li><strong>Web Team:</strong> Technical training on WCAG standards</li>
+                            <li><strong>Client Services:</strong> Training on assisting clients with disabilities</li>
+                            <li><strong>Leadership:</strong> Strategic training on accessibility initiatives</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>8. FEEDBACK AND SUPPORT</h4>
+                        <p>We welcome feedback on the accessibility of Fosyfol Studio's digital properties and physical services.</p>
+                        
+                        <h5>8.1 Reporting Accessibility Issues</h5>
+                        <p>If you encounter accessibility barriers, please contact us:</p>
+                        <ul>
+                            <li><strong>Email:</strong> accessibility@fosyfolstudio.com</li>
+                            <li><strong>Phone:</strong> +1 (503) 555-0123 (accessible phone line available)</li>
+                            <li><strong>Mail:</strong> 123 Biophilic Way, Portland, OR 97205</li>
+                            <li><strong>Online Form:</strong> Available on our Contact page</li>
+                        </ul>
+                        
+                        <h5>8.2 Response Process</h5>
+                        <p>When you report an accessibility issue, we will:</p>
+                        <ol>
+                            <li>Acknowledge your report within 2 business days</li>
+                            <li>Investigate the issue and determine solutions</li>
+                            <li>Provide an estimated timeline for resolution</li>
+                            <li>Notify you when the issue is resolved</li>
+                            <li>Offer alternative access options in the interim</li>
+                        </ol>
+                        
+                        <h5>8.3 Requesting Accommodations</h5>
+                        <p>If you need accommodations to access our services, please contact us at least 5 business days in advance. We will make reasonable accommodations at no additional cost.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>9. ACCESSIBILITY ROADMAP</h4>
+                        <p>Our accessibility improvement plan includes:</p>
+                        
+                        <h5>9.1 Short-Term Goals (0-6 months)</h5>
+                        <ul>
+                            <li>Complete audit of all website pages</li>
+                            <li>Fix critical accessibility issues</li>
+                            <li>Implement automated accessibility testing</li>
+                            <li>Train all new hires on accessibility standards</li>
+                        </ul>
+                        
+                        <h5>9.2 Medium-Term Goals (6-18 months)</h5>
+                        <ul>
+                            <li>Achieve WCAG 2.1 Level AA compliance for all new content</li>
+                            <li>Implement user testing with people with disabilities</li>
+                            <li>Develop accessibility guidelines for client projects</li>
+                            <li>Create accessibility resource center on website</li>
+                        </ul>
+                        
+                        <h5>9.3 Long-Term Goals (18+ months)</h5>
+                        <ul>
+                            <li>Achieve WCAG 2.1 Level AAA where applicable</li>
+                            <li>Become industry leader in accessible biophilic design</li>
+                            <li>Develop accessibility certification program for staff</li>
+                            <li>Contribute to accessibility standards development</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>10. COMPLIANCE</h4>
+                        <p>Our accessibility efforts comply with:</p>
+                        <ul>
+                            <li>Americans with Disabilities Act (ADA)</li>
+                            <li>Section 508 of the Rehabilitation Act</li>
+                            <li>Web Content Accessibility Guidelines (WCAG) 2.1</li>
+                            <li>State-specific accessibility laws</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>11. ENFORCEMENT</h4>
+                        <p>If you are not satisfied with our response to accessibility concerns, you may contact:</p>
+                        <ul>
+                            <li><strong>U.S. Department of Justice:</strong> ADA complaint process</li>
+                            <li><strong>Your State Attorney General:</strong> State disability rights office</li>
+                            <li><strong>Better Business Bureau:</strong> BBB complaint process</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>12. UPDATES TO THIS STATEMENT</h4>
+                        <p>We will review and update this Accessibility Statement at least annually. Updates will be posted on this page with a new effective date.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>13. CONTACT INFORMATION</h4>
+                        <p>For accessibility-related inquiries:</p>
+                        <p><strong>Fosyfol Studio Accessibility Officer</strong><br>
+                        123 Biophilic Way<br>
+                        Portland, OR 97205<br>
+                        Email: accessibility@fosyfolstudio.com<br>
+                        Phone: +1 (503) 555-0123<br>
+                        TTY: +1 (503) 555-0124</p>
+                    </div>
+                `
+            },
+            sustainability: {
+                title: "Sustainability Commitment",
+                content: `
+                    <div class="policy-section">
+                        <h4>FOSYFOL STUDIO SUSTAINABILITY COMMITMENT</h4>
+                        <p><strong>Effective Date:</strong> October 15, 2023</p>
+                        <p><strong>Last Updated:</strong> October 15, 2023</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>1. OUR PHILOSOPHY</h4>
+                        <p>At Fosyfol Studio, sustainability is not an add-on—it's embedded in our DNA. We believe that true design excellence harmonizes human needs with ecological responsibility. Our commitment extends beyond creating beautiful spaces to ensuring our practices contribute positively to the planet and communities we serve across the United States.</p>
+                        <p>We recognize the urgent need to address climate change, biodiversity loss, and social inequality, and we commit to being part of the solution through regenerative design practices.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>2. SUSTAINABILITY PRINCIPLES</h4>
+                        <p>Our work is guided by seven core sustainability principles:</p>
+                        
+                        <h5>2.1 Regenerative Design</h5>
+                        <p>Create spaces that give back more than they take—environments that actively improve air quality, support biodiversity, and enhance ecosystem health.</p>
+                        
+                        <h5>2.2 Circular Economy</h5>
+                        <p>Eliminate waste through design, prioritizing materials that can be reused, repaired, refurbished, remanufactured, and recycled.</p>
+                        
+                        <h5>2.3 Biodiversity Enhancement</h5>
+                        <p>Support and enhance local ecosystems through native plant selection, habitat creation, and ecological connectivity.</p>
+                        
+                        <h5>2.4 Carbon Consciousness</h5>
+                        <p>Minimize carbon emissions throughout our operations and projects, with strategies for reduction, sequestration, and offsetting.</p>
+                        
+                        <h5>2.5 Water Stewardship</h5>
+                        <p>Protect and conserve water resources through efficient systems, rainwater harvesting, and water-sensitive design.</p>
+                        
+                        <h5>2.6 Social Responsibility</h5>
+                        <p>Support fair labor practices, community engagement, and equitable access to nature-integrated design.</p>
+                        
+                        <h5>2.7 Transparency and Accountability</h5>
+                        <p>Measure, report, and continuously improve our sustainability performance with full transparency.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>3. ENVIRONMENTAL PRACTICES</h4>
+                        
+                        <h5>3.1 Material Selection</h5>
+                        <p>We prioritize materials that meet the following criteria:</p>
+                        <ul>
+                            <li><strong>Locally Sourced:</strong> Within 500 miles when possible to reduce transportation emissions</li>
+                            <li><strong>Rapidly Renewable:</strong> Bamboo, cork, wool, linoleum, and other fast-growing materials</li>
+                            <li><strong>Recycled Content:</strong> Post-consumer and post-industrial recycled materials</li>
+                            <li><strong>Low-VOC/Non-Toxic:</strong> Materials that promote indoor air quality</li>
+                            <li><strong>Certified:</strong> FSC-certified wood, Cradle to Cradle certified products</li>
+                            <li><strong>Durable:</strong> Long-lasting materials that reduce replacement frequency</li>
+                            <li><strong>Biodegradable:</strong> Materials that safely return to natural systems</li>
+                        </ul>
+                        
+                        <h5>3.2 Energy Efficiency</h5>
+                        <p>Our designs incorporate energy-saving strategies:</p>
+                        <ul>
+                            <li>Passive solar design and natural ventilation</li>
+                            <li>High-efficiency HVAC systems with smart controls</li>
+                            <li>LED lighting with daylight harvesting</li>
+                            <li>Energy modeling during design phase</li>
+                            <li>Renewable energy integration (solar, geothermal)</li>
+                            <li>Building envelope optimization</li>
+                        </ul>
+                        
+                        <h5>3.3 Water Conservation</h5>
+                        <p>Water-saving features in our designs:</p>
+                        <ul>
+                            <li>Low-flow fixtures and water-efficient appliances</li>
+                            <li>Rainwater harvesting and greywater systems</li>
+                            <li>Drought-tolerant native plants</li>
+                            <li>Smart irrigation with soil moisture sensors</li>
+                            <li>Permeable surfaces to reduce runoff</li>
+                        </ul>
+                        
+                        <h5>3.4 Waste Reduction</h5>
+                        <p>We minimize waste through:</p>
+                        <ul>
+                            <li>Design for disassembly and material recovery</li>
+                            <li>Pre-construction waste planning and auditing</li>
+                            <li>Donation of usable materials to Habitat for Humanity</li>
+                            <li>Comprehensive recycling program (target: 90% diversion)</li>
+                            <li>Digital documentation to reduce paper use</li>
+                            <li>Reusable packaging and shipping materials</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>4. BIODIVERSITY AND ECOSYSTEMS</h4>
+                        
+                        <h5>4.1 Native Plants</h5>
+                        <p>We prioritize native plant species because they:</p>
+                        <ul>
+                            <li>Support local pollinators and wildlife</li>
+                            <li>Require less water and maintenance</li>
+                            <li>Are adapted to local climate conditions</li>
+                            <li>Preserve regional botanical identity</li>
+                            <li>Resist local pests and diseases naturally</li>
+                        </ul>
+                        
+                        <h5>4.2 Habitat Creation</h5>
+                        <p>Our designs create habitats for:</p>
+                        <ul>
+                            <li>Pollinators (bees, butterflies, hummingbirds)</li>
+                            <li>Beneficial insects for natural pest control</li>
+                            <li>Urban wildlife (birds, bats, beneficial reptiles)</li>
+                            <li>Soil microorganisms through healthy planting practices</li>
+                        </ul>
+                        
+                        <h5>4.3 Invasive Species Management</h5>
+                        <p>We never specify invasive plant species and provide education on invasive species management to clients.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>5. CARBON MANAGEMENT</h4>
+                        
+                        <h5>5.1 Carbon Footprint Reduction</h5>
+                        <p>We measure and reduce our carbon footprint through:</p>
+                        <ul>
+                            <li>Annual carbon footprint assessment</li>
+                            <li>Virtual meetings to reduce travel (target: 40% reduction)</li>
+                            <li>Electric and hybrid company vehicles</li>
+                            <li>Energy-efficient office operations</li>
+                            <li>Carbon-conscious procurement policies</li>
+                        </ul>
+                        
+                        <h5>5.2 Carbon Sequestration</h5>
+                        <p>Our living systems actively sequester carbon:</p>
+                        <ul>
+                            <li>Plants in living walls and interior gardens</li>
+                            <li>Specification of carbon-storing materials (wood, bamboo)</li>
+                            <li>Soil health improvements that increase carbon storage</li>
+                        </ul>
+                        
+                        <h5>5.3 Carbon Offsetting</h5>
+                        <p>For unavoidable emissions, we invest in verified carbon offset projects, prioritizing:</p>
+                        <ul>
+                            <li>Reforestation and forest conservation</li>
+                            <li>Renewable energy development</li>
+                            <li>Community-based carbon projects</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>6. SOCIAL RESPONSIBILITY</h4>
+                        
+                        <h5>6.1 Fair Labor Practices</h5>
+                        <p>We ensure fair treatment of all workers:</p>
+                        <ul>
+                            <li>Living wages for all employees and contractors</li>
+                            <li>Comprehensive benefits including health insurance</li>
+                            <li>Safe working conditions and equipment</li>
+                            <li>Professional development opportunities</li>
+                            <li>Diversity, equity, and inclusion initiatives</li>
+                        </ul>
+                        
+                        <h5>6.2 Community Engagement</h5>
+                        <p>We actively support our communities:</p>
+                        <ul>
+                            <li>Pro bono design services for community organizations (target: 5% of billable hours)</li>
+                            <li>Partnerships with local schools for environmental education</li>
+                            <li>Support for local businesses and artisans</li>
+                            <li>Volunteer days for habitat restoration</li>
+                            <li>Scholarships for underrepresented students in design</li>
+                        </ul>
+                        
+                        <h5>6.3 Equitable Access</h5>
+                        <p>We work to make nature-integrated design accessible:</p>
+                        <ul>
+                            <li>Sliding scale fees for qualifying non-profits</li>
+                            <li>Design solutions for diverse economic levels</li>
+                            <li>Accessible design for people with disabilities</li>
+                            <li>Multilingual resources and services</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>7. SUPPLY CHAIN RESPONSIBILITY</h4>
+                        
+                        <h5>7.1 Supplier Code of Conduct</h5>
+                        <p>We require suppliers to adhere to our sustainability standards, including:</p>
+                        <ul>
+                            <li>Environmental management systems</li>
+                            <li>Fair labor practices and safe working conditions</li>
+                            <li>Transparency in material sourcing</li>
+                            <li>Conflict-free material policies</li>
+                        </ul>
+                        
+                        <h5>7.2 Local Sourcing Priority</h5>
+                        <p>We prioritize local suppliers to:</p>
+                        <ul>
+                            <li>Reduce transportation emissions</li>
+                            <li>Support local economies</li>
+                            <li>Build resilient regional supply chains</li>
+                            <li>Reduce packaging and waste</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>8. MEASUREMENT AND REPORTING</h4>
+                        
+                        <h5>8.1 Key Performance Indicators</h5>
+                        <p>We track and report on the following metrics:</p>
+                        <ul>
+                            <li>Carbon emissions (Scope 1, 2, and 3)</li>
+                            <li>Water consumption and savings</li>
+                            <li>Waste diversion rate</li>
+                            <li>Percentage of sustainable materials</li>
+                            <li>Native plant usage rate</li>
+                            <li>Community service hours</li>
+                            <li>Supplier sustainability compliance</li>
+                        </ul>
+                        
+                        <h5>8.2 Annual Sustainability Report</h5>
+                        <p>We publish an annual sustainability report that includes:</p>
+                        <ul>
+                            <li>Performance against targets</li>
+                            <li>Case studies of sustainable projects</li>
+                            <li>Challenges and lessons learned</li>
+                            <li>Goals for the coming year</li>
+                            <li>Third-party verification where applicable</li>
+                        </ul>
+                        
+                        <h5>8.3 Continuous Improvement</h5>
+                        <p>We regularly review and update our sustainability practices based on:</p>
+                        <ul>
+                            <li>Performance data and metrics</li>
+                            <li>Client feedback and preferences</li>
+                            <li>Industry best practices and innovations</li>
+                            <li>Scientific research and climate data</li>
+                            <li>Stakeholder input and community needs</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>9. CERTIFICATIONS AND MEMBERSHIPS</h4>
+                        <p>We maintain the following sustainability certifications and memberships:</p>
+                        <ul>
+                            <li>US Green Building Council Member</li>
+                            <li>International Living Future Institute Member</li>
+                            <li>B Corporation Certified (in process)</li>
+                            <li>1% for the Planet Member</li>
+                            <li>American Sustainable Business Council</li>
+                            <li>Climate Neutral Certified (target 2024)</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>10. CLIENT PARTNERSHIP</h4>
+                        <p>We work collaboratively with clients to achieve sustainability goals:</p>
+                        
+                        <h5>10.1 Sustainability Assessment</h5>
+                        <p>For each project, we conduct a sustainability assessment to identify opportunities in:</p>
+                        <ul>
+                            <li>Energy efficiency and renewable energy</li>
+                            <li>Water conservation and management</li>
+                            <li>Material health and circularity</li>
+                            <li>Biodiversity and ecosystem services</li>
+                            <li>Social and community benefits</li>
+                        </ul>
+                        
+                        <h5>10.2 Education and Support</h5>
+                        <p>We provide clients with:</p>
+                        <ul>
+                            <li>Sustainability guidelines for their space</li>
+                            <li>Maintenance protocols for living systems</li>
+                            <li>Resource conservation recommendations</li>
+                            <li>Monitoring and optimization support</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>11. GOVERNANCE AND ACCOUNTABILITY</h4>
+                        
+                        <h5>11.1 Sustainability Committee</h5>
+                        <p>Our Sustainability Committee, comprising representatives from all departments, meets quarterly to:</p>
+                        <ul>
+                            <li>Review sustainability performance</li>
+                            <li>Set goals and priorities</li>
+                            <li>Approve sustainability initiatives</li>
+                            <li>Ensure accountability across the organization</li>
+                        </ul>
+                        
+                        <h5>11.2 Employee Engagement</h5>
+                        <p>All employees participate in sustainability through:</p>
+                        <ul>
+                            <li>Annual sustainability training</li>
+                            <li>Green team initiatives</li>
+                            <li>Sustainability innovation awards</li>
+                            <li>Volunteer opportunities</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>12. FUTURE COMMITMENTS</h4>
+                        <p>By 2030, we commit to:</p>
+                        <ul>
+                            <li>Achieve net-zero carbon operations</li>
+                            <li>Eliminate single-use plastics from our projects</li>
+                            <li>Source 100% renewable energy for our offices</li>
+                            <li>Ensure 90% of materials are circular or sustainable</li>
+                            <li>Create 1,000 square feet of new habitat per project</li>
+                            <li>Train 1,000 people in sustainable design practices</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>13. CONTACT INFORMATION</h4>
+                        <p>For questions about our sustainability commitment:</p>
+                        <p><strong>Fosyfol Studio Sustainability Director</strong><br>
+                        123 Biophilic Way<br>
+                        Portland, OR 97205<br>
+                        Email: sustainability@fosyfolstudio.com<br>
+                        Phone: +1 (503) 555-0123</p>
+                    </div>
+                `
+            },
+            client: {
+                title: "Client Agreement",
+                content: `
+                    <div class="policy-section">
+                        <h4>FOSYFOL STUDIO CLIENT AGREEMENT</h4>
+                        <p><strong>Effective Date:</strong> October 15, 2023</p>
+                        <p><strong>Last Updated:</strong> October 15, 2023</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>1. PARTIES TO AGREEMENT</h4>
+                        <p>This Client Agreement ("Agreement") is made between:</p>
+                        <p><strong>Fosyfol Studio</strong><br>
+                        123 Biophilic Way<br>
+                        Portland, Oregon 97205<br>
+                        ("Designer")</p>
+                        <p>AND</p>
+                        <p><strong>[Client Name]</strong><br>
+                        [Client Address]<br>
+                        ("Client")</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>2. SCOPE OF SERVICES</h4>
+                        
+                        <h5>2.1 Services Included</h5>
+                        <p>The Designer agrees to provide the following services for the Project located at [Project Address]:</p>
+                        <ul>
+                            <li><strong>Phase 1: Discovery and Assessment</strong>
+                                <ul>
+                                    <li>Initial consultation and site assessment</li>
+                                    <li>Client needs analysis and goal setting</li>
+                                    <li>Site measurements and documentation</li>
+                                    <li>Budget analysis and feasibility study</li>
+                                </ul>
+                            </li>
+                            <li><strong>Phase 2: Concept Development</strong>
+                                <ul>
+                                    <li>Design concept development and presentation</li>
+                                    <li>Material and finish selection</li>
+                                    <li>Living system planning and plant selection</li>
+                                    <li>Lighting design and specification</li>
+                                </ul>
+                            </li>
+                            <li><strong>Phase 3: Design Development</strong>
+                                <ul>
+                                    <li>Detailed design drawings and specifications</li>
+                                    <li>Furniture, fixture, and equipment selection</li>
+                                    <li>Construction documents (as needed)</li>
+                                    <li>Permitting assistance</li>
+                                </ul>
+                            </li>
+                            <li><strong>Phase 4: Implementation Support</strong>
+                                <ul>
+                                    <li>Contractor coordination and bid management</li>
+                                    <li>Site visits and construction administration</li>
+                                    <li>Installation supervision</li>
+                                    <li>Quality control and punch list development</li>
+                                </ul>
+                            </li>
+                            <li><strong>Phase 5: Project Completion</strong>
+                                <ul>
+                                    <li>Final walkthrough and inspection</li>
+                                    <li>Maintenance training and documentation</li>
+                                    <li>Warranty information and support</li>
+                                    <li>Project documentation delivery</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        
+                        <h5>2.2 Services Not Included</h5>
+                        <p>The following services are <strong>not</strong> included unless specifically noted in Addendum A:</p>
+                        <ul>
+                            <li>Architectural or engineering services requiring licensed professionals</li>
+                            <li>Construction, demolition, or installation labor</li>
+                            <li>Permit fees and governmental charges</li>
+                            <li>Furniture, fixtures, equipment, or material costs</li>
+                            <li>Contractor selection or management beyond coordination</li>
+                            <li>Ongoing maintenance services after project completion</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>3. PROJECT SCHEDULE</h4>
+                        
+                        <h5>3.1 Estimated Timeline</h5>
+                        <p>The estimated project timeline is as follows:</p>
+                        <ul>
+                            <li><strong>Phase 1:</strong> [Start Date] to [End Date]</li>
+                            <li><strong>Phase 2:</strong> [Start Date] to [End Date]</li>
+                            <li><strong>Phase 3:</strong> [Start Date] to [End Date]</li>
+                            <li><strong>Phase 4:</strong> [Start Date] to [End Date]</li>
+                            <li><strong>Phase 5:</strong> [Start Date] to [End Date]</li>
+                        </ul>
+                        
+                        <h5>3.2 Critical Path Items</h5>
+                        <p>The following Client deliverables are critical to maintaining the project schedule:</p>
+                        <ul>
+                            <li>Client approvals within 5 business days of presentation</li>
+                            <li>Timely decisions on material selections</li>
+                            <li>Access to project site as needed</li>
+                            <li>Timely payment of invoices</li>
+                        </ul>
+                        
+                        <h5>3.3 Delay Management</h5>
+                        <p>Delays caused by the Client may result in:</p>
+                        <ul>
+                            <li>Revised project schedule</li>
+                            <li>Additional fees for extended project management</li>
+                            <li>Material price increases</li>
+                            <li>Contractor scheduling conflicts</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>4. COMPENSATION</h4>
+                        
+                        <h5>4.1 Fee Structure</h5>
+                        <p>Compensation for services shall be as follows:</p>
+                        <ul>
+                            <li><strong>Design Fee:</strong> $[Amount] (covers Phases 1-3)</li>
+                            <li><strong>Implementation Fee:</strong> $[Amount] or [Percentage]% of construction costs (covers Phase 4)</li>
+                            <li><strong>Hourly Rate:</strong> $[Amount] per hour for additional services or changes</li>
+                        </ul>
+                        
+                        <h5>4.2 Payment Schedule</h5>
+                        <p>Payments shall be made as follows:</p>
+                        <ul>
+                            <li><strong>Initial Retainer:</strong> 25% of Design Fee due upon signing</li>
+                            <li><strong>Phase 1 Completion:</strong> 25% of Design Fee due</li>
+                            <li><strong>Phase 2 Completion:</strong> 25% of Design Fee due</li>
+                            <li><strong>Phase 3 Completion:</strong> 25% of Design Fee due</li>
+                            <li><strong>Implementation Fee:</strong> 50% due at start of construction, 50% upon completion</li>
+                            <li><strong>Additional Services:</strong> Invoiced monthly, due upon receipt</li>
+                        </ul>
+                        
+                        <h5>4.3 Expenses</h5>
+                        <p>The Client agrees to reimburse the Designer for reasonable expenses including:</p>
+                        <ul>
+                            <li>Travel expenses beyond 30 miles from Designer's office</li>
+                            <li>Material samples and mock-ups</li>
+                            <li>Printing and reproduction costs</li>
+                            <li>Shipping and delivery charges</li>
+                            <li>Subconsultant fees (with prior approval)</li>
+                        </ul>
+                        <p>Expenses over $100 require prior Client approval.</p>
+                        
+                        <h5>4.4 Late Payments</h5>
+                        <p>Late payments incur interest at 1.5% per month or the maximum rate allowed by law. Services may be suspended for accounts more than 30 days past due.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>5. CLIENT RESPONSIBILITIES</h4>
+                        <p>The Client agrees to:</p>
+                        <ul>
+                            <li>Provide accurate and complete information about the Project</li>
+                            <li>Make timely decisions and provide approvals within agreed timelines</li>
+                            <li>Grant safe access to the property for site visits, measurements, and installations</li>
+                            <li>Obtain necessary permits, approvals, and HOA consents</li>
+                            <li>Secure appropriate insurance for the property and project</li>
+                            <li>Make timely payments as outlined in Section 4</li>
+                            <li>Communicate any changes, concerns, or issues promptly</li>
+                            <li>Provide a safe working environment for Designer and contractors</li>
+                            <li>Follow maintenance guidelines for installed living systems</li>
+                            <li>Respect Designer's working hours and response time expectations</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>6. DESIGNER RESPONSIBILITIES</h4>
+                        <p>The Designer agrees to:</p>
+                        <ul>
+                            <li>Perform services with reasonable care, skill, and diligence</li>
+                            <li>Communicate regularly about project progress</li>
+                            <li>Present design concepts and recommendations clearly</li>
+                            <li>Respect Client's budget constraints and priorities</li>
+                            <li>Coordinate with contractors and vendors as agreed</li>
+                            <li>Maintain professional liability insurance</li>
+                            <li>Protect Client's confidential information</li>
+                            <li>Adhere to agreed timelines and schedules</li>
+                            <li>Provide clear documentation and instructions</li>
+                            <li>Address concerns and issues promptly and professionally</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>7. INTELLECTUAL PROPERTY</h4>
+                        
+                        <h5>7.1 Ownership</h5>
+                        <p>All designs, drawings, specifications, and other work product created by the Designer remain the Designer's intellectual property until full payment is received.</p>
+                        
+                        <h5>7.2 License</h5>
+                        <p>Upon full payment, the Client receives a non-exclusive, non-transferable license to use the designs for the specific Project. The license does not permit:</p>
+                        <ul>
+                            <li>Reuse of designs for other projects</li>
+                            <li>Commercial reproduction or distribution</li>
+                            <li>Modification without Designer's permission</li>
+                            <li>Transfer to third parties</li>
+                        </ul>
+                        
+                        <h5>7.3 Credit</h5>
+                        <p>The Client agrees to credit Fosyfol Studio in any publications or displays of the Project, when appropriate.</p>
+                        
+                        <h5>7.4 Portfolio Rights</h5>
+                        <p>The Designer retains the right to use photographs and information about the Project for portfolio, marketing, and educational purposes.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>8. CHANGES TO SCOPE</h4>
+                        
+                        <h5>8.1 Change Orders</h5>
+                        <p>Any changes to the scope of work must be documented in a written Change Order, signed by both parties, detailing:</p>
+                        <ul>
+                            <li>Description of change</li>
+                            <li>Impact on timeline</li>
+                            <li>Additional fees or cost savings</li>
+                            <li>Revised payment schedule (if applicable)</li>
+                        </ul>
+                        
+                        <h5>8.2 Authorization</h5>
+                        <p>No additional work shall be performed without an approved Change Order, except in emergencies where written approval follows within 48 hours.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>9. WARRANTIES</h4>
+                        
+                        <h5>9.1 Workmanship Warranty</h5>
+                        <p>The Designer warrants that services will be performed with reasonable care and skill. A 90-day warranty on workmanship is provided from project completion.</p>
+                        
+                        <h5>9.2 Living Systems</h5>
+                        <p>Living systems (plants, irrigation) require proper maintenance. The Designer provides initial establishment support and guidance but cannot guarantee plant survival, which depends on:</p>
+                        <ul>
+                            <li>Proper maintenance and care</li>
+                            <li>Environmental conditions</li>
+                            <li>Pest and disease management</li>
+                            <li>Factors beyond Designer's control</li>
+                        </ul>
+                        
+                        <h5>9.3 Manufacturer Warranties</h5>
+                        <p>Products and materials carry manufacturer warranties, which the Designer will help facilitate but is not responsible for.</p>
+                        
+                        <h5>9.4 Disclaimer</h5>
+                        <p>EXCEPT AS EXPRESSLY STATED HEREIN, DESIGNER MAKES NO OTHER WARRANTIES, EXPRESS OR IMPLIED.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>10. LIMITATION OF LIABILITY</h4>
+                        <p>IN NO EVENT SHALL DESIGNER BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOST PROFITS OR DATA.</p>
+                        <p>DESIGNER'S TOTAL LIABILITY FOR ANY CLAIM ARISING FROM THIS AGREEMENT SHALL NOT EXCEED THE TOTAL FEES PAID BY CLIENT FOR THE SPECIFIC PROJECT GIVING RISE TO THE CLAIM.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>11. INDEMNIFICATION</h4>
+                        <p>The Client agrees to indemnify and hold harmless the Designer from any claims, damages, losses, or expenses arising from:</p>
+                        <ul>
+                            <li>Client's breach of this Agreement</li>
+                            <li>Client's negligence or willful misconduct</li>
+                            <li>Property conditions or hazards not disclosed by Client</li>
+                            <li>Unauthorized changes to designs by Client or third parties</li>
+                            <li>Failure to follow maintenance guidelines for living systems</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>12. TERMINATION</h4>
+                        
+                        <h5>12.1 Termination for Convenience</h5>
+                        <p>Either party may terminate this Agreement with 30 days written notice. Upon termination:</p>
+                        <ul>
+                            <li>Client must pay for all services rendered up to termination date</li>
+                            <li>Client must pay for any non-cancellable commitments</li>
+                            <li>Designer will deliver all completed work product</li>
+                            <li>Intellectual property rights remain as specified in Section 7</li>
+                        </ul>
+                        
+                        <h5>12.2 Termination for Cause</h5>
+                        <p>Either party may terminate immediately for material breach, including:</p>
+                        <ul>
+                            <li>Non-payment of fees</li>
+                            <li>Failure to perform material obligations</li>
+                            <li>Insolvency or bankruptcy</li>
+                            <li>Illegal or unethical conduct</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>13. DISPUTE RESOLUTION</h4>
+                        
+                        <h5>13.1 Negotiation</h5>
+                        <p>Parties agree to attempt to resolve disputes through good faith negotiation for at least 30 days before initiating formal proceedings.</p>
+                        
+                        <h5>13.2 Mediation</h5>
+                        <p>If negotiation fails, parties agree to mediate with a mutually acceptable mediator in Portland, Oregon, before pursuing litigation.</p>
+                        
+                        <h5>13.3 Governing Law</h5>
+                        <p>This Agreement shall be governed by Oregon law.</p>
+                        
+                        <h5>13.4 Jurisdiction</h5>
+                        <p>Any legal action shall be brought in state or federal courts in Multnomah County, Oregon.</p>
+                        
+                        <h5>13.5 Attorney's Fees</h5>
+                        <p>The prevailing party in any dispute is entitled to recover reasonable attorney's fees and costs.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>14. CONFIDENTIALITY</h4>
+                        <p>Both parties agree to keep confidential any proprietary or sensitive information disclosed during the Project, except:</p>
+                        <ul>
+                            <li>Information that becomes publicly available</li>
+                            <li>Information required to be disclosed by law</li>
+                            <li>Information necessary for project execution</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>15. FORCE MAJEURE</h4>
+                        <p>Neither party is liable for failure to perform due to circumstances beyond reasonable control, including natural disasters, acts of government, pandemics, or utility failures.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>16. MISCELLANEOUS</h4>
+                        
+                        <h5>16.1 Entire Agreement</h5>
+                        <p>This Agreement, with any Addenda, constitutes the entire agreement between the parties.</p>
+                        
+                        <h5>16.2 Severability</h5>
+                        <p>If any provision is found unenforceable, the remaining provisions remain in effect.</p>
+                        
+                        <h5>16.3 Assignment</h5>
+                        <p>Client may not assign this Agreement without Designer's written consent.</p>
+                        
+                        <h5>16.4 Notices</h5>
+                        <p>Notices must be in writing and sent to the addresses above, via certified mail or email with read receipt.</p>
+                        
+                        <h5>16.5 Amendments</h5>
+                        <p>Amendments must be in writing and signed by both parties.</p>
+                        
+                        <h5>16.6 Survival</h5>
+                        <p>Sections 7 (Intellectual Property), 10 (Limitation of Liability), 11 (Indemnification), and 13 (Dispute Resolution) survive termination.</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>17. SIGNATURES</h4>
+                        <p>By signing below, both parties agree to the terms of this Agreement.</p>
+                        
+                        <div style="margin: 30px 0; padding: 20px; border: 1px solid #ddd; background-color: #f9f9f9;">
+                            <p><strong>FOSYFOL STUDIO</strong></p>
+                            <p>___________________________________________</p>
+                            <p>Authorized Signature</p>
+                            <p>___________________________________________</p>
+                            <p>Printed Name</p>
+                            <p>___________________________________________</p>
+                            <p>Title</p>
+                            <p>___________________________________________</p>
+                            <p>Date</p>
+                        </div>
+                        
+                        <div style="margin: 30px 0; padding: 20px; border: 1px solid #ddd; background-color: #f9f9f9;">
+                            <p><strong>CLIENT</strong></p>
+                            <p>___________________________________________</p>
+                            <p>Authorized Signature</p>
+                            <p>___________________________________________</p>
+                            <p>Printed Name</p>
+                            <p>___________________________________________</p>
+                            <p>Title</p>
+                            <p>___________________________________________</p>
+                            <p>Date</p>
+                        </div>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>ADDENDUM A: ADDITIONAL SERVICES</h4>
+                        <p>[To be completed if additional services are included]</p>
+                    </div>
+
+                    <div class="policy-section">
+                        <h4>ADDENDUM B: PROJECT SPECIFICATIONS</h4>
+                        <p>[Detailed project specifications, budget, and special requirements]</p>
+                    </div>
+                `
+            }
+        };
+
+        // DOM Content Loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize header scroll effect
+            window.addEventListener('scroll', function() {
+                const header = document.getElementById('header');
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mainNav = document.getElementById('mainNav');
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                mainNav.style.display = mainNav.style.display === 'flex' ? 'none' : 'flex';
+                if (mainNav.style.display === 'flex') {
+                    mainNav.style.flexDirection = 'column';
+                    mainNav.style.position = 'absolute';
+                    mainNav.style.top = '100%';
+                    mainNav.style.right = '20px';
+                    mainNav.style.backgroundColor = 'white';
+                    mainNav.style.padding = '20px';
+                    mainNav.style.boxShadow = '0 10px 30px rgba(0,0,0,0.1)';
+                    mainNav.style.borderRadius = '10px';
+                    mainNav.style.width = '200px';
+                    
+                    const navItems = mainNav.querySelectorAll('li');
+                    navItems.forEach(item => {
+                        item.style.margin = '10px 0';
+                    });
+                }
+            });
+
+            // Generate portfolio items
+            const portfolioGrid = document.getElementById('portfolioGrid');
+            portfolioItems.forEach(item => {
+                const portfolioItem = document.createElement('div');
+                portfolioItem.className = 'portfolio-item';
+                portfolioItem.innerHTML = `
+                    <img src="${item.img}" alt="${item.title} - ${item.category}">
+                    <div class="portfolio-overlay">
+                        <h3>${item.title}</h3>
+                        <p>${item.category}</p>
+                    </div>
+                `;
+                portfolioGrid.appendChild(portfolioItem);
+            });
+
+            // Generate testimonials
+            const testimonialsGrid = document.getElementById('testimonialsGrid');
+            testimonials.forEach(testimonial => {
+                const testimonialCard = document.createElement('div');
+                testimonialCard.className = 'testimonial-card';
+                testimonialCard.innerHTML = `
+                    <div class="testimonial-text">${testimonial.text}</div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="author-info">
+                            <h4>${testimonial.author}</h4>
+                            <p>${testimonial.role}</p>
+                        </div>
+                    </div>
+                `;
+                testimonialsGrid.appendChild(testimonialCard);
+            });
+
+            // Initialize USA Map
+            const map = L.map('map').setView([39.8283, -98.5795], 4);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            
+            // Add markers for US offices
+            const offices = [
+                {name: "Headquarters", coords: [45.5152, -122.6784], city: "Portland, OR"},
+                {name: "East Coast Office", coords: [40.7128, -74.0060], city: "New York, NY"},
+                {name: "Midwest Office", coords: [41.8781, -87.6298], city: "Chicago, IL"},
+                {name: "West Coast Office", coords: [37.7749, -122.4194], city: "San Francisco, CA"},
+                {name: "Southeast Office", coords: [25.7617, -80.1918], city: "Miami, FL"}
+            ];
+            
+            offices.forEach(office => {
+                L.marker(office.coords).addTo(map)
+                    .bindPopup(`<b>Fosyfol Studio ${office.name}</b><br>${office.city}`)
+                    .openPopup();
+            });
+
+            // Contact form submission
+            const contactForm = document.getElementById('contactForm');
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Thank you for your message from ' + document.getElementById('state').value + '! We will contact you within 48 hours.');
+                contactForm.reset();
+            });
+
+            // Policy Modal Functionality
+            const policyModal = document.getElementById('policyModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const closeModal = document.getElementById('closeModal');
+            const policyLinks = document.querySelectorAll('.policy-link');
+
+            policyLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const policyType = this.getAttribute('data-policy');
+                    if (policies[policyType]) {
+                        modalTitle.textContent = policies[policyType].title;
+                        modalBody.innerHTML = policies[policyType].content;
+                        policyModal.style.display = 'block';
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            });
+
+            closeModal.addEventListener('click', function() {
+                policyModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+
+            window.addEventListener('click', function(e) {
+                if (e.target === policyModal) {
+                    policyModal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+
+            // Line drawing animation for hero
+            const canvas = document.getElementById('lineCanvas');
+            const ctx = canvas.getContext('2d');
+            const canvasBg = document.getElementById('canvasBg');
+            
+            // Set canvas dimensions
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+            
+            // Room drawing points (simplified representation)
+            const points = [
+                {x: 0.2, y: 0.7}, // Start point
+                {x: 0.2, y: 0.3},
+                {x: 0.8, y: 0.3},
+                {x: 0.8, y: 0.7},
+                {x: 0.2, y: 0.7}, // Back to start (room outline)
+                {x: 0.4, y: 0.7}, // Door
+                {x: 0.4, y: 0.5},
+                {x: 0.6, y: 0.5},
+                {x: 0.6, y: 0.7},
+                {x: 0.5, y: 0.3}, // Window
+                {x: 0.7, y: 0.3},
+                {x: 0.7, y: 0.4},
+                {x: 0.5, y: 0.4},
+                {x: 0.5, y: 0.3},
+                {x: 0.3, y: 0.5}, // Furniture
+                {x: 0.3, y: 0.6},
+                {x: 0.35, y: 0.6},
+                {x: 0.35, y: 0.5},
+                {x: 0.3, y: 0.5}
+            ];
+            
+            let currentPoint = 0;
+            let animationProgress = 0;
+            let lastTime = 0;
+            const animationSpeed = 0.5; // points per second
+            
+            function drawLineAnimation(timestamp) {
+                if (!lastTime) lastTime = timestamp;
+                const deltaTime = timestamp - lastTime;
+                lastTime = timestamp;
+                
+                // Clear canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Set drawing style
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.lineJoin = 'round';
+                ctx.lineCap = 'round';
+                
+                // Begin path
+                ctx.beginPath();
+                
+                // Draw completed points
+                for (let i = 0; i < Math.floor(currentPoint); i++) {
+                    const point = points[i];
+                    const nextPoint = points[i+1];
+                    
+                    if (i === 0) {
+                        ctx.moveTo(point.x * canvas.width, point.y * canvas.height);
+                    }
+                    
+                    if (nextPoint) {
+                        ctx.lineTo(nextPoint.x * canvas.width, nextPoint.y * canvas.height);
+                    }
+                }
+                
+                // Draw current line in progress
+                if (currentPoint < points.length - 1) {
+                    const currentIndex = Math.floor(currentPoint);
+                    const point = points[currentIndex];
+                    const nextPoint = points[currentIndex + 1];
+                    const progress = currentPoint - currentIndex;
+                    
+                    const currentX = point.x + (nextPoint.x - point.x) * progress;
+                    const currentY = point.y + (nextPoint.y - point.y) * progress;
+                    
+                    if (currentIndex === 0) {
+                        ctx.moveTo(point.x * canvas.width, point.y * canvas.height);
+                    }
+                    
+                    ctx.lineTo(currentX * canvas.width, currentY * canvas.height);
+                    
+                    // Update progress
+                    currentPoint += (animationSpeed * deltaTime) / 1000;
+                } else {
+                    // Animation complete, show background
+                    canvasBg.classList.add('active');
+                }
+                
+                // Stroke the path
+                ctx.stroke();
+                
+                // Continue animation if not complete
+                if (currentPoint < points.length - 1) {
+                    requestAnimationFrame(drawLineAnimation);
+                }
+            }
+            
+            // Start animation after a short delay
+            setTimeout(() => {
+                requestAnimationFrame(drawLineAnimation);
+            }, 500);
+        });
+    </script>
+</body>
+</html>
